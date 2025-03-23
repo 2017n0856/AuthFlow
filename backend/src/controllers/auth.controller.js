@@ -1,7 +1,5 @@
 const bcrypt = require('bcryptjs');
-
-// In-memory storage for users (replace with database in production)
-const users = [];
+const User = require('../models/user.model');
 
 const signup = async (req, res) => {
   try {
@@ -13,7 +11,7 @@ const signup = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = users.find(user => user.email === email);
+    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -23,18 +21,14 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create new user
-    const newUser = {
-      id: users.length + 1,
+    const newUser = await User.create({
       name,
       email,
       password: hashedPassword
-    };
-
-    // Store user (replace with database operation in production)
-    users.push(newUser);
+    });
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = newUser;
+    const { password: _, ...userWithoutPassword } = newUser.toJSON();
 
     res.status(201).json({
       message: 'User created successfully',
@@ -56,7 +50,7 @@ const login = async (req, res) => {
     }
 
     // Find user
-    const user = users.find(user => user.email === email);
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -68,7 +62,7 @@ const login = async (req, res) => {
     }
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userWithoutPassword } = user.toJSON();
 
     res.json({
       message: 'Login successful',
