@@ -43,8 +43,13 @@ const signup = async (req, res) => {
       emailVerificationExpires,
     });
 
-    // Send verification email
-    await sendEmailVerification(email, emailVerificationToken);
+    try {
+      // Send verification email
+      await sendEmailVerification(email, emailVerificationToken);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+      res.status(500).json({ message: "Failed to send verification email" });
+    }
 
     // Remove sensitive data from response
     const {
