@@ -18,13 +18,14 @@ interface AuthResponse {
     createdAt: string;
     updatedAt: string;
   };
+  token?: string;
 }
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export const authService = {
-  async signup(data: SignupData): Promise<AuthResponse> {
-    const response = await fetch(`${API_URL}/signup`, {
+  signup: async (data: SignupData): Promise<AuthResponse> => {
+    const response = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -40,8 +41,8 @@ export const authService = {
     return response.json();
   },
 
-  async login(data: LoginData): Promise<AuthResponse> {
-    const response = await fetch(`${API_URL}/login`, {
+  login: async (data: LoginData): Promise<AuthResponse> => {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
