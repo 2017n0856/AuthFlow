@@ -208,7 +208,12 @@ const login = async (req, res) => {
     });
 
     // Remove sensitive data from response
-    const { password: _, ...userWithoutPassword } = user.toJSON();
+    const {
+      password: _,
+      emailVerificationToken: __,
+      phoneVerificationToken: ___,
+      ...userWithoutPassword
+    } = user.toJSON();
 
     res.json({
       message: "Login successful",
