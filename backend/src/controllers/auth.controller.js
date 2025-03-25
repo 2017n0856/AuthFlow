@@ -190,9 +190,9 @@ const login = async (req, res) => {
     }
 
     // Check if user is active
-    if (!user.isActive) {
+    if (!user.isEmailVerified) {
       return res.status(401).json({
-        message: "Please verify your email and phone number before logging in",
+        message: "Please verify your email before logging in",
       });
     }
 

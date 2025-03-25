@@ -28,11 +28,6 @@ const VerifyEmail = () => {
         await verificationService.verifyEmail(token);
         setStatus('success');
         setMessage('Email verified successfully! You can now log in.');
-
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
       } catch (error) {
         setStatus('error');
         setMessage(error instanceof Error ? error.message : 'Failed to verify email');
@@ -40,7 +35,7 @@ const VerifyEmail = () => {
     };
 
     verifyEmail();
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -83,13 +78,13 @@ const VerifyEmail = () => {
           </div>
         </div>
 
-        {status === 'error' && (
+        {(status === 'success' || status === 'error') && (
           <div className="text-center">
             <button
               onClick={() => navigate('/login')}
               className="text-sm text-blue-600 hover:text-blue-500"
             >
-              Return to Login
+              Back to Login
             </button>
           </div>
         )}

@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   // This will be replaced with actual user data later
   const mockUser = {
     name: 'John Doe',
@@ -9,6 +11,7 @@ const Home = () => {
 
   const handleLogout = () => {
     // Logout logic will be implemented later
+    logout();
     navigate('/');
   };
 

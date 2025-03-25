@@ -5,8 +5,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import VerifyEmail from './pages/VerifyEmail';
 import VerifyPhone from './pages/VerifyPhone';
-import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
+import Home from './pages/Home';
 
 function App() {
   return (
@@ -26,10 +26,10 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/home"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <Home />
               </PrivateRoute>
             }
           />
