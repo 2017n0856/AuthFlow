@@ -233,10 +233,132 @@ const login = async (req, res) => {
   }
 };
 
+// Update user's name
+const updateName = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const userId = req.user.id;
+
+    if (!name || name.trim().length === 0) {
+      return res.status(400).json({ message: "Name is required" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.name = name.trim();
+    await user.save();
+
+    res.json({
+      message: "Name updated successfully",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isActive: user.isActive,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating name:", error);
+    res.status(500).json({ message: "Failed to update name" });
+  }
+};
+
+// Update user's phone number
+const updatePhone = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const userId = req.user.id;
+
+    if (!phone || phone.trim().length === 0) {
+      return res.status(400).json({ message: "Phone number is required" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Reset phone verification status when phone number changes
+    user.phone = phone.trim();
+    user.isPhoneVerified = false;
+    await user.save();
+
+    res.json({
+      message: "Phone number updated successfully",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isActive: user.isActive,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating phone:", error);
+    res.status(500).json({ message: "Failed to update phone number" });
+  }
+};
+
+// Toggle 2FA status
+const toggle2FA = async (req, res) => {
+  try {
+    const { enabled } = req.body;
+    const userId = req.user.id;
+
+    if (typeof enabled !== "boolean") {
+      return res
+        .status(400)
+        .json({ message: "Enabled status must be a boolean" });
+    }
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (enabled && !user.isPhoneVerified) {
+      return res
+        .status(400)
+        .json({ message: "Phone number must be verified to enable 2FA" });
+    }
+
+    user.is2FAEnabled = enabled;
+    await user.save();
+
+    res.json({
+      message: `2FA ${enabled ? "enabled" : "disabled"} successfully`,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        isActive: user.isActive,
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+        is2FAEnabled: user.is2FAEnabled,
+      },
+    });
+  } catch (error) {
+    console.error("Error toggling 2FA:", error);
+    res.status(500).json({ message: "Failed to toggle 2FA" });
+  }
+};
+
 module.exports = {
   signup,
   login,
   verifyEmail,
   sendPhoneVerification,
   verifyPhone,
+  updateName,
+  updatePhone,
+  toggle2FA,
 };

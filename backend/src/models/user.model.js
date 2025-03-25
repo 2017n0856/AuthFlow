@@ -35,6 +35,10 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    is2FAEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     emailVerificationToken: {
       type: DataTypes.STRING,
       allowNull: true,
