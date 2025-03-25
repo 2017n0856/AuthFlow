@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { verificationService } from '../services/verification.service';
 
@@ -7,6 +7,7 @@ const VerifyEmail = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('Verifying your email...');
+  const hasVerified = useRef(false);
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -18,6 +19,12 @@ const VerifyEmail = () => {
           return;
         }
 
+        // Prevent double verification
+        if (hasVerified.current) {
+          return;
+        }
+
+        hasVerified.current = true;
         await verificationService.verifyEmail(token);
         setStatus('success');
         setMessage('Email verified successfully! You can now log in.');
@@ -45,8 +52,8 @@ const VerifyEmail = () => {
         </div>
 
         <div className={`rounded-md p-4 ${status === 'success' ? 'bg-green-50' :
-            status === 'error' ? 'bg-red-50' :
-              'bg-blue-50'
+          status === 'error' ? 'bg-red-50' :
+            'bg-blue-50'
           }`}>
           <div className="flex">
             <div className="flex-shrink-0">
@@ -67,8 +74,8 @@ const VerifyEmail = () => {
             </div>
             <div className="ml-3">
               <p className={`text-sm font-medium ${status === 'success' ? 'text-green-800' :
-                  status === 'error' ? 'text-red-800' :
-                    'text-blue-800'
+                status === 'error' ? 'text-red-800' :
+                  'text-blue-800'
                 }`}>
                 {message}
               </p>
