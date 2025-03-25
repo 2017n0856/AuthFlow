@@ -5,8 +5,10 @@ interface User {
   id: number;
   name: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
+  phone: string | null;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
 }
 
 interface AuthContextType {
@@ -33,7 +35,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedToken = localStorage.getItem('token');
     if (storedUser && storedToken) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        // Ensure all required fields are present
+        const userData: User = {
+          id: parsedUser.id,
+          name: parsedUser.name,
+          email: parsedUser.email,
+          phone: parsedUser.phone || null,
+          isActive: parsedUser.isActive || false,
+          isEmailVerified: parsedUser.isEmailVerified || false,
+          isPhoneVerified: parsedUser.isPhoneVerified || false
+        };
+        setUser(userData);
         setToken(storedToken);
       } catch (err) {
         logout();

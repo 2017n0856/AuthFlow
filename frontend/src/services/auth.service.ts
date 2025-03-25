@@ -9,15 +9,19 @@ interface LoginData {
   password: string;
 }
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  isActive: boolean;
+  isEmailVerified: boolean;
+  isPhoneVerified: boolean;
+}
+
 interface AuthResponse {
   message: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  user: User;
   token?: string;
 }
 
@@ -38,7 +42,18 @@ export const authService = {
       throw new Error(error.message || 'Failed to sign up');
     }
 
-    return response.json();
+    const result = await response.json();
+    // Ensure all required fields are present
+    result.user = {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      phone: result.user.phone || null,
+      isActive: result.user.isActive || false,
+      isEmailVerified: result.user.isEmailVerified || false,
+      isPhoneVerified: result.user.isPhoneVerified || false
+    };
+    return result;
   },
 
   login: async (data: LoginData): Promise<AuthResponse> => {
@@ -55,6 +70,17 @@ export const authService = {
       throw new Error(error.message || 'Failed to login');
     }
 
-    return response.json();
+    const result = await response.json();
+    // Ensure all required fields are present
+    result.user = {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      phone: result.user.phone || null,
+      isActive: result.user.isActive || false,
+      isEmailVerified: result.user.isEmailVerified || false,
+      isPhoneVerified: result.user.isPhoneVerified || false
+    };
+    return result;
   },
 }; 
