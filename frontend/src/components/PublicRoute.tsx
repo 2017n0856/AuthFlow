@@ -16,8 +16,9 @@ const PublicRoute = ({ children }: PublicRouteProps) => {
     );
   }
 
+  console.log(user, token);
   if (user && token) {
-    return <Navigate to="/dashbaord" />;
+    return <Navigate to="/dashboard" />;
   }
 
   return <>{children}</>;

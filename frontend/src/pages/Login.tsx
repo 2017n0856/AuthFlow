@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       await login(formData.email, formData.password);
-      navigate('/home'); // Redirect to home page after successful login
+      navigate('/dashbaord'); // Redirect to home page after successful login
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to login');
     } finally {
