@@ -51,13 +51,21 @@ const signup = async (req, res) => {
       res.status(500).json({ message: "Failed to send verification email" });
     }
 
-    // Remove sensitive data from response
-    const { password: _, ...userWithoutSensitiveData } = newUser.toJSON();
+    // Return only specific user data
+    const userData = {
+      name: newUser.name,
+      id: newUser.id,
+      email: newUser.email,
+      phone: newUser.phone,
+      isActive: newUser.isActive,
+      isEmailVerified: newUser.isEmailVerified,
+      isPhoneVerified: newUser.isPhoneVerified,
+    };
 
     res.status(201).json({
       message:
         "User created successfully. Please check your email to verify your account.",
-      user: userWithoutSensitiveData,
+      user: userData,
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -203,12 +211,20 @@ const login = async (req, res) => {
       expiresIn: "24h",
     });
 
-    // Remove sensitive data from response
-    const { password: _, ...userWithoutPassword } = user.toJSON();
+    // Return only specific user data
+    const userData = {
+      name: user.name,
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      isActive: user.isActive,
+      isEmailVerified: user.isEmailVerified,
+      isPhoneVerified: user.isPhoneVerified,
+    };
 
     res.json({
       message: "Login successful",
-      user: userWithoutPassword,
+      user: userData,
       token,
     });
   } catch (error) {
