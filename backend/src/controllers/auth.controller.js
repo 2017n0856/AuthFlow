@@ -190,7 +190,7 @@ const login = async (req, res) => {
     // Find user
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "User not found" });
     }
 
     // Check if user is active
