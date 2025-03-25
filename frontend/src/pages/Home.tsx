@@ -3,14 +3,9 @@ import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  // This will be replaced with actual user data later
-  const mockUser = {
-    name: 'John Doe',
-  };
+  const { logout, user } = useAuth();
 
   const handleLogout = () => {
-    // Logout logic will be implemented later
     logout();
     navigate('/');
   };
@@ -24,7 +19,7 @@ const Home = () => {
               <h1 className="text-xl font-bold text-gray-800">AuthFlow</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {mockUser.name}</span>
+              <span className="text-gray-700">Welcome, {user?.name}</span>
               <button
                 onClick={handleLogout}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
