@@ -1,11 +1,11 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-interface PrivateRouteProps {
+interface PublicRouteProps {
   children: React.ReactNode;
 }
 
-const PrivateRoute = ({ children }: PrivateRouteProps) => {
+const PublicRoute = ({ children }: PublicRouteProps) => {
   const { user, loading, token } = useAuth();
 
   if (loading) {
@@ -16,11 +16,11 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
     );
   }
 
-  if (!user || !token) {
-    return <Navigate to="/login" />;
+  if (user && token) {
+    return <Navigate to="/dashbaord" />;
   }
 
   return <>{children}</>;
 };
 
-export default PrivateRoute; 
+export default PublicRoute; 
