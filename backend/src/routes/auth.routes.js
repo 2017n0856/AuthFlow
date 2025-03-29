@@ -15,7 +15,7 @@ const auth = require("../middleware/auth");
 // Auth routes
 router.post("/signup", signup);
 router.post("/login", login);
-router.get("/verify-email/:token", verifyEmail);
+router.get("/verify-email", verifyEmail);
 router.post("/send-phone-verification", auth, sendPhoneVerification);
 router.post("/verify-phone", auth, verifyPhone);
 
