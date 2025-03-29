@@ -1,36 +1,65 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/auth.service';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, token, setUser, logout } = useAuth();
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.is2FAEnabled || false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
   });
+  const [error, setError] = useState<string | null>(null);
 
-  const handleNameUpdate = () => {
-    // TODO: Implement name update
-    setIsEditingName(false);
+  const handleNameUpdate = async () => {
+    try {
+      setError(null);
+      const response = await authService.updateName(formData.name, token!);
+      setUser(response.user);
+      setIsEditingName(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update name');
+    }
   };
 
-  const handlePhoneUpdate = () => {
-    // TODO: Implement phone update
-    setIsEditingPhone(false);
+  const handlePhoneUpdate = async () => {
+    try {
+      setError(null);
+      const response = await authService.updatePhone(formData.phone, token!);
+      setUser(response.user);
+      setIsEditingPhone(false);
+      // Reset phone verification status
+      setIsVerifyingPhone(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update phone');
+    }
   };
 
-  const handlePhoneVerification = () => {
-    // TODO: Implement phone verification
-    setIsVerifyingPhone(false);
+  const handlePhoneVerification = async () => {
+    try {
+      setError(null);
+      const response = await authService.verifyPhone(verificationCode, token!);
+      setUser(response.user);
+      setIsVerifyingPhone(false);
+      setVerificationCode('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to verify phone');
+    }
   };
 
-  const toggle2FA = () => {
-    // TODO: Implement 2FA toggle
-    setIs2FAEnabled(!is2FAEnabled);
+  const toggle2FA = async () => {
+    try {
+      setError(null);
+      const response = await authService.toggle2FA(!is2FAEnabled, token!);
+      setUser(response.user);
+      setIs2FAEnabled(response.user.is2FAEnabled);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to toggle 2FA');
+    }
   };
 
   return (
@@ -215,6 +244,12 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+      {error && (
+        <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
     </div>
   );
 };

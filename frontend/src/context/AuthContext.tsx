@@ -9,6 +9,7 @@ interface User {
   isActive: boolean;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
+  is2FAEnabled: boolean;
 }
 
 interface AuthContextType {
@@ -19,6 +20,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  setUser: (user: User | null) => void;
+  verifyPhone: (code: string, token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,7 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           phone: parsedUser.phone || null,
           isActive: parsedUser.isActive || false,
           isEmailVerified: parsedUser.isEmailVerified || false,
-          isPhoneVerified: parsedUser.isPhoneVerified || false
+          isPhoneVerified: parsedUser.isPhoneVerified || false,
+          is2FAEnabled: parsedUser.is2FAEnabled || false
         };
         setUser(userData);
         setToken(storedToken);
@@ -54,6 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }, [user]);
 
   const login = async (email: string, password: string) => {
     try {
@@ -88,6 +98,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('token');
   };
 
+  const verifyPhone = async (code: string, token: string) => {
+    try {
+      setError(null);
+      const response = await authService.verifyPhone(code, token);
+      setUser(response.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to verify phone');
+      throw err;
+    }
+  };
+
   const value = {
     user,
     token,
@@ -95,7 +116,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
     login,
     signup,
-    logout
+    logout,
+    setUser,
+    verifyPhone
   };
 
   return (
