@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/auth.service';
+import { verificationService } from '../services/verification.service';
 
 const Dashboard = () => {
-  const { user, token, setUser, logout } = useAuth();
+  const { user, token, setUser, logout, sendPhoneVerification, verifyPhone } = useAuth();
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
@@ -14,6 +15,7 @@ const Dashboard = () => {
     phone: user?.phone || '',
   });
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleNameUpdate = async () => {
     try {
@@ -39,11 +41,25 @@ const Dashboard = () => {
     }
   };
 
+  const handleSendVerificationCode = async () => {
+    try {
+      setError(null);
+      setSuccessMessage(null);
+      await verificationService.sendPhoneVerification(formData.phone, token!);
+      setSuccessMessage('Verification code sent successfully');
+      setIsVerifyingPhone(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send verification code');
+    }
+  };
+
   const handlePhoneVerification = async () => {
     try {
       setError(null);
-      const response = await authService.verifyPhone(verificationCode, token!);
+      setSuccessMessage(null);
+      const response = await verificationService.verifyPhone(verificationCode, token!);
       setUser(response.user);
+      setSuccessMessage('Phone number verified successfully');
       setIsVerifyingPhone(false);
       setVerificationCode('');
     } catch (err) {
@@ -178,10 +194,10 @@ const Dashboard = () => {
               {user?.phone && !user?.isPhoneVerified && (
                 <div className="mt-2">
                   <button
-                    onClick={() => setIsVerifyingPhone(true)}
+                    onClick={handleSendVerificationCode}
                     className="text-sm text-blue-600 hover:text-blue-500"
                   >
-                    Verify phone number
+                    Send Verification Code
                   </button>
                 </div>
               )}
@@ -248,6 +264,12 @@ const Dashboard = () => {
       {error && (
         <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          {successMessage}
         </div>
       )}
     </div>

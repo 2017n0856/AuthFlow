@@ -171,7 +171,20 @@ const verifyPhone = async (req, res) => {
       isActive: user.isEmailVerified, // Activate user if email is already verified
     });
 
-    res.json({ message: "Phone number verified successfully" });
+    const userData = {
+      name: user.name,
+      id: user.id,
+      email: user.email,
+      phone: user.phone,
+      isActive: user.isActive,
+      isEmailVerified: user.isEmailVerified,
+      isPhoneVerified: user.isPhoneVerified,
+    };
+
+    res.json({
+      message: "Phone number verified successfully",
+      user: userData,
+    });
   } catch (error) {
     console.error("Phone verification error:", error);
     res.status(500).json({ message: "Error verifying phone number" });
@@ -220,6 +233,7 @@ const login = async (req, res) => {
       isActive: user.isActive,
       isEmailVerified: user.isEmailVerified,
       isPhoneVerified: user.isPhoneVerified,
+      is2FAEnabled: user.is2FAEnabled,
     };
 
     res.json({

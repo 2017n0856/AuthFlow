@@ -44,7 +44,6 @@ export const authService = {
     }
 
     const result = await response.json();
-    // Ensure all required fields are present
     result.user = {
       id: result.user.id,
       name: result.user.name,
@@ -73,7 +72,6 @@ export const authService = {
     }
 
     const result = await response.json();
-    // Ensure all required fields are present
     result.user = {
       id: result.user.id,
       name: result.user.name,

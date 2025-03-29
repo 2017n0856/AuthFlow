@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authService } from '../services/auth.service';
+import { verificationService } from '../services/verification.service';
 
 interface User {
   id: number;
@@ -22,6 +23,7 @@ interface AuthContextType {
   logout: () => void;
   setUser: (user: User | null) => void;
   verifyPhone: (code: string, token: string) => Promise<void>;
+  sendPhoneVerification: (phone: string, token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -101,10 +103,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const verifyPhone = async (code: string, token: string) => {
     try {
       setError(null);
-      const response = await authService.verifyPhone(code, token);
+      const response = await verificationService.verifyPhone(code, token);
       setUser(response.user);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to verify phone');
+      throw err;
+    }
+  };
+
+  const sendPhoneVerification = async (phone: string, token: string) => {
+    try {
+      setError(null);
+      await verificationService.sendPhoneVerification(phone, token);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send verification code');
       throw err;
     }
   };
@@ -118,7 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signup,
     logout,
     setUser,
-    verifyPhone
+    verifyPhone,
+    sendPhoneVerification
   };
 
   return (
