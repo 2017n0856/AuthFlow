@@ -35,13 +35,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if user and token are stored in localStorage
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     if (storedUser && storedToken) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        // Ensure all required fields are present
         const userData: User = {
           id: parsedUser.id,
           name: parsedUser.name,
