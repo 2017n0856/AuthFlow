@@ -9,6 +9,7 @@ const {
   updateName,
   updatePhone,
   toggle2FA,
+  verify2FA,
 } = require("../controllers/auth.controller");
 const auth = require("../middleware/auth");
 
@@ -18,7 +19,7 @@ router.post("/login", login);
 router.get("/verify-email", verifyEmail);
 router.post("/send-phone-verification", auth, sendPhoneVerification);
 router.post("/verify-phone", auth, verifyPhone);
-
+router.post("/verify-2fa", verify2FA);
 // New routes for profile management
 router.put("/profile/name", auth, updateName);
 router.put("/profile/phone", auth, updatePhone);
